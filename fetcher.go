@@ -9,6 +9,11 @@ import (
 	"strconv"
 )
 
+type Vacancy struct {
+	URL   string
+	descr string
+}
+
 const apiURL = "https://api.hh.ru/vacancies"
 
 func getVacanciesURLsPerPage(pageNb int) []string {
@@ -68,7 +73,45 @@ func getVacanciesURLs() []string {
 	return res
 }
 
+func fetchVacancyDescr(url string) string {
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to fetch description %s: %v\n", url, err)
+		os.Exit(1)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to read %s: %v\n", url, err)
+		os.Exit(1)
+	}
+
+	var respJSON map[string]interface{}
+	if err := json.Unmarshal(body, &respJSON); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to unmarshall JSON %s: %v\n", url, err)
+		os.Exit(1)
+	}
+
+	return respJSON["description"].(string)
+}
+
+func NewVacancies(vacanciesURLs []string) []Vacancy {
+	res := make([]Vacancy, 0)
+
+	for _, url := range vacanciesURLs {
+		descr := fetchVacancyDescr(url)
+		vacancy := Vacancy{URL: url, descr: descr}
+		res = append(res, vacancy)
+	}
+
+	return res
+}
+
 func main() {
 	vacanciesURLs := getVacanciesURLs()
-	fmt.Println(vacanciesURLs)
+	vacancies := NewVacancies(vacanciesURLs)
+	for _, vacancy := range vacancies {
+		fmt.Printf("%v %v\n\n\n", vacancy.URL, vacancy.descr)
+	}
 }

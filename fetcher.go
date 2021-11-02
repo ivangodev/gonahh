@@ -118,6 +118,6 @@ func main() {
 	vacanciesURLs := getVacanciesURLs()
 	vacancies := NewVacancies(vacanciesURLs)
 	for _, vacancy := range vacancies {
-		fmt.Printf("%v %v\n%v\n", vacancy.URL, vacancy.descr, vacancy.keywords)
+		fmt.Printf("%v \n%v\n", vacancy.URL, vacancy.keywords)
 	}
 }

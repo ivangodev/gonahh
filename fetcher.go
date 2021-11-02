@@ -103,9 +103,12 @@ func NewVacancies(vacanciesURLs []string) []Vacancy {
 
 	for _, url := range vacanciesURLs {
 		descr := fetchVacancyDescr(url)
-		keywords := extractor.ExtractKeywords(descr)
-		vacancy := Vacancy{URL: url, descr: descr, keywords: keywords}
-		res = append(res, vacancy)
+		if keywords := extractor.ExtractKeywords(descr); keywords != nil {
+			vacancy := Vacancy{URL: url, descr: descr, keywords: keywords}
+			res = append(res, vacancy)
+		} else {
+			fmt.Fprintf(os.Stderr, "Description of %s dropped\n", url)
+		}
 	}
 
 	return res

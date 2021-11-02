@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/vanyaio/gohh/extractor"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -10,8 +11,9 @@ import (
 )
 
 type Vacancy struct {
-	URL   string
-	descr string
+	URL      string
+	descr    string
+	keywords []string
 }
 
 const apiURL = "https://api.hh.ru/vacancies"
@@ -101,7 +103,8 @@ func NewVacancies(vacanciesURLs []string) []Vacancy {
 
 	for _, url := range vacanciesURLs {
 		descr := fetchVacancyDescr(url)
-		vacancy := Vacancy{URL: url, descr: descr}
+		keywords := extractor.ExtractKeywords(descr)
+		vacancy := Vacancy{URL: url, descr: descr, keywords: keywords}
 		res = append(res, vacancy)
 	}
 
@@ -112,6 +115,6 @@ func main() {
 	vacanciesURLs := getVacanciesURLs()
 	vacancies := NewVacancies(vacanciesURLs)
 	for _, vacancy := range vacancies {
-		fmt.Printf("%v %v\n\n\n", vacancy.URL, vacancy.descr)
+		fmt.Printf("%v %v\n%v\n", vacancy.URL, vacancy.descr, vacancy.keywords)
 	}
 }

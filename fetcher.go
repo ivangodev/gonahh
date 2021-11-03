@@ -12,6 +12,7 @@ import (
 
 type Vacancy struct {
 	URL      string
+	name     string
 	engWords []string
 }
 
@@ -74,7 +75,7 @@ func getVacanciesURLs() []string {
 	return res
 }
 
-func fetchVacancyDescr(url string) string {
+func fetchVacancyDescrAndName(url string) (descr string, name string) {
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to fetch description %s: %v\n", url, err)
@@ -94,16 +95,18 @@ func fetchVacancyDescr(url string) string {
 		os.Exit(1)
 	}
 
-	return respJSON["description"].(string)
+	descr = respJSON["description"].(string)
+	name = respJSON["name"].(string)
+	return
 }
 
 func NewVacancies(vacanciesURLs []string) []Vacancy {
 	res := make([]Vacancy, 0)
 
 	for _, url := range vacanciesURLs {
-		descr := fetchVacancyDescr(url)
+		descr, name := fetchVacancyDescrAndName(url)
 		if engwords := extractor.ExtractEngWords(descr); engwords != nil {
-			vacancy := Vacancy{URL: url, engWords: engwords}
+			vacancy := Vacancy{URL: url, name: name, engWords: engwords}
 			res = append(res, vacancy)
 		} else {
 			fmt.Fprintf(os.Stderr, "Description of %s dropped\n", url)
@@ -116,6 +119,7 @@ func NewVacancies(vacanciesURLs []string) []Vacancy {
 func (v *Vacancy) logVacancy() {
 	fmt.Fprintf(os.Stdout, "\n")
 	fmt.Fprintf(os.Stdout, "%s\n", v.URL)
+	fmt.Fprintf(os.Stdout, "%s\n", v.name)
 	for _, w := range v.engWords {
 		fmt.Fprintf(os.Stdout, "%s\n", w)
 	}

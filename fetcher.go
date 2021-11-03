@@ -12,7 +12,7 @@ import (
 
 type Vacancy struct {
 	URL      string
-	keywords []string
+	engWords []string
 }
 
 const apiURL = "https://api.hh.ru/vacancies"
@@ -102,8 +102,8 @@ func NewVacancies(vacanciesURLs []string) []Vacancy {
 
 	for _, url := range vacanciesURLs {
 		descr := fetchVacancyDescr(url)
-		if keywords := extractor.ExtractKeywords(descr); keywords != nil {
-			vacancy := Vacancy{URL: url, keywords: keywords}
+		if engwords := extractor.ExtractEngWords(descr); engwords != nil {
+			vacancy := Vacancy{URL: url, engWords: engwords}
 			res = append(res, vacancy)
 		} else {
 			fmt.Fprintf(os.Stderr, "Description of %s dropped\n", url)
@@ -117,6 +117,6 @@ func main() {
 	vacanciesURLs := getVacanciesURLs()
 	vacancies := NewVacancies(vacanciesURLs)
 	for _, vacancy := range vacancies {
-		fmt.Printf("%v \n%v\n", vacancy.URL, vacancy.keywords)
+		fmt.Printf("%v \n%v\n", vacancy.URL, vacancy.engWords)
 	}
 }

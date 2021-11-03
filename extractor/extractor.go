@@ -28,7 +28,7 @@ func descrInEnglish(descr string) bool {
 	return float64(eng_runes_nb)/float64(runes_nb) > 0.5
 }
 
-func ExtractKeywords(descrInHTML string) []string {
+func ExtractEngWords(descrInHTML string) []string {
 	descr := strip.StripTags(descrInHTML)
 
 	if descrInEnglish(descr) {
@@ -37,21 +37,21 @@ func ExtractKeywords(descrInHTML string) []string {
 	}
 
 	re, _ := regexp.Compile("[a-zA-z#+]+")
-	keywords := re.FindAllString(descr, -1)
+	engwords := re.FindAllString(descr, -1)
 
-	uniqueKeywords := make(map[string]interface{})
-	for _, k := range keywords {
-		uniqueKeywords[k] = nil
+	uniqueEngWords := make(map[string]interface{})
+	for _, k := range engwords {
+		uniqueEngWords[k] = nil
 	}
 
-	lowercaseKeywords := make(map[string]interface{})
-	for k := range uniqueKeywords {
-		lowercaseKeywords[strings.ToLower(k)] = nil
+	lowercaseEngWords := make(map[string]interface{})
+	for k := range uniqueEngWords {
+		lowercaseEngWords[strings.ToLower(k)] = nil
 	}
 
-	res := make([]string, len(lowercaseKeywords))
+	res := make([]string, len(lowercaseEngWords))
 	i := 0
-	for k := range lowercaseKeywords {
+	for k := range lowercaseEngWords {
 		res[i] = k
 		i++
 	}

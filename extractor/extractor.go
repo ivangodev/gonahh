@@ -36,7 +36,7 @@ func ExtractEngWords(descrInHTML string) []string {
 		return nil
 	}
 
-	re, _ := regexp.Compile("[a-zA-z#+]+")
+	re, _ := regexp.Compile("[a-zA-z#+.\\-]+[a-zA-z]")
 	engwords := re.FindAllString(descr, -1)
 
 	uniqueEngWords := make(map[string]interface{})

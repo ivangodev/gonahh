@@ -26,10 +26,10 @@ func getVacanciesURLsPerPage(pageNb int) []string {
 	}
 
 	q := req.URL.Query()
-	q.Add("text", "NAME:Erlang")
+	q.Add("text", "NAME:developer")
 	q.Add("area", "2") //St-Petersburg
 	q.Add("page", strconv.FormatInt(int64(pageNb), 10))
-	q.Add("per_page", "10")
+	q.Add("per_page", "100")
 	req.URL.RawQuery = q.Encode()
 
 	url := req.URL.String()
@@ -53,6 +53,10 @@ func getVacanciesURLsPerPage(pageNb int) []string {
 	}
 
 	res := make([]string, 0)
+	if respJSON["items"] == nil {
+		return res
+	}
+
 	for _, vacancy := range respJSON["items"].([]interface{}) {
 		vacancyJSON := vacancy.(map[string]interface{})
 		res = append(res, vacancyJSON["url"].(string))

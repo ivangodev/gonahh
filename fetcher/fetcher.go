@@ -99,6 +99,10 @@ func fetchVacancyDescrAndName(url string) (descr string, name string) {
 		os.Exit(1)
 	}
 
+	if respJSON["description"] == nil {
+		fmt.Fprintf(os.Stderr, "Failed to get vacancy %s info\n", url)
+		os.Exit(1)
+	}
 	descr = respJSON["description"].(string)
 	name = respJSON["name"].(string)
 	return

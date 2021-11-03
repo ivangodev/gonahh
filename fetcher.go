@@ -12,7 +12,6 @@ import (
 
 type Vacancy struct {
 	URL      string
-	descr    string
 	keywords []string
 }
 
@@ -104,7 +103,7 @@ func NewVacancies(vacanciesURLs []string) []Vacancy {
 	for _, url := range vacanciesURLs {
 		descr := fetchVacancyDescr(url)
 		if keywords := extractor.ExtractKeywords(descr); keywords != nil {
-			vacancy := Vacancy{URL: url, descr: descr, keywords: keywords}
+			vacancy := Vacancy{URL: url, keywords: keywords}
 			res = append(res, vacancy)
 		} else {
 			fmt.Fprintf(os.Stderr, "Description of %s dropped\n", url)

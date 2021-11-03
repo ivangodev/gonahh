@@ -80,7 +80,17 @@ func GetVacanciesURLs() []string {
 }
 
 func fetchVacancyDescrAndName(url string) (descr string, name string) {
-	resp, err := http.Get(url)
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to make new request %s: %v\n", url, err)
+		os.Exit(1)
+	}
+
+	req.Header.Set("User-Agent", "gonahh/1.0 (tri.ilchenko@gmail.com)")
+
+	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to fetch description %s: %v\n", url, err)
 		os.Exit(1)

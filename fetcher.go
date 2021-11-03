@@ -113,10 +113,19 @@ func NewVacancies(vacanciesURLs []string) []Vacancy {
 	return res
 }
 
+func (v *Vacancy) logVacancy() {
+	fmt.Fprintf(os.Stdout, "\n")
+	fmt.Fprintf(os.Stdout, "%s\n", v.URL)
+	for _, w := range v.engWords {
+		fmt.Fprintf(os.Stdout, "%s\n", w)
+	}
+	fmt.Fprintf(os.Stdout, "\n")
+}
+
 func main() {
 	vacanciesURLs := getVacanciesURLs()
 	vacancies := NewVacancies(vacanciesURLs)
 	for _, vacancy := range vacancies {
-		fmt.Printf("%v \n%v\n", vacancy.URL, vacancy.engWords)
+		vacancy.logVacancy()
 	}
 }

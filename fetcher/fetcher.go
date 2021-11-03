@@ -1,4 +1,4 @@
-package main
+package fetcher
 
 import (
 	"encoding/json"
@@ -65,7 +65,7 @@ func getVacanciesURLsPerPage(pageNb int) []string {
 	return res
 }
 
-func getVacanciesURLs() []string {
+func GetVacanciesURLs() []string {
 	res := make([]string, 0)
 
 	for page := 0; ; page++ {
@@ -120,20 +120,13 @@ func NewVacancies(vacanciesURLs []string) []Vacancy {
 	return res
 }
 
-func (v *Vacancy) logVacancy() {
-	fmt.Fprintf(os.Stdout, "\n")
-	fmt.Fprintf(os.Stdout, "%s\n", v.URL)
-	fmt.Fprintf(os.Stdout, "%s\n", v.name)
+func (v *Vacancy) LogVacancy(f *os.File) {
+	//TODO: error handling
+	f.WriteString("\n")
+	f.WriteString(fmt.Sprintf("%s\n", v.URL))
+	f.WriteString(fmt.Sprintf("%s\n", v.name))
 	for _, w := range v.engWords {
-		fmt.Fprintf(os.Stdout, "%s\n", w)
+		f.WriteString(fmt.Sprintf("%s\n", w))
 	}
-	fmt.Fprintf(os.Stdout, "\n")
-}
-
-func main() {
-	vacanciesURLs := getVacanciesURLs()
-	vacancies := NewVacancies(vacanciesURLs)
-	for _, vacancy := range vacancies {
-		vacancy.logVacancy()
-	}
+	f.WriteString("\n")
 }

@@ -1,8 +1,5 @@
+CREATE DATABASE test;
 \c test
-
-DROP TABLE url cascade ;
-DROP TABLE name ;
-DROP TABLE engwords ;
 
 CREATE TABLE url (
 	job_id SERIAL PRIMARY KEY,
@@ -17,5 +14,11 @@ CREATE TABLE name (
 
 CREATE TABLE engwords (
 	job_id INTEGER REFERENCES url (job_id),
-	word VARCHAR ( 255 ) NOT NULL
+	word VARCHAR ( 255 ) NOT NULL,
+	UNIQUE (job_id, word)
+);
+
+CREATE TABLE category (
+	word VARCHAR ( 255 ) NOT NULL UNIQUE,
+	category VARCHAR ( 255 ) NOT NULL
 );

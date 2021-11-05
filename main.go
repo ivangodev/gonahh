@@ -7,6 +7,7 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/vanyaio/gohh/fetcher"
+	"github.com/vanyaio/gohh/webapp"
 	"os"
 	"strings"
 )
@@ -18,10 +19,20 @@ type Job struct {
 	engWords []string
 }
 
+type category struct {
+	name  string
+	words []string
+}
+
 const (
 	lookingURL     = iota
 	lookingName    = iota
 	lookingEngword = iota
+)
+
+const (
+	lookingCategoryName = iota
+	pickingWord         = iota
 )
 
 func showHelp(error_code int) {
@@ -37,24 +48,6 @@ func boolToInt(v bool) int {
 		return 1
 	}
 	return 0
-}
-
-func handleWrongInput(web, fetch, read bool, file string) {
-	var inputIsWrong bool
-
-	if boolToInt(web)+boolToInt(fetch)+boolToInt(read) != 1 {
-		fmt.Fprintf(os.Stderr, "use only one of web, fetch or read is a must\n")
-		inputIsWrong = true
-	}
-
-	if !web && file == "" {
-		fmt.Fprintf(os.Stderr, "file is mandatory argument\n")
-		inputIsWrong = true
-	}
-
-	if inputIsWrong {
-		showHelp(1)
-	}
 }
 
 func handleFetch(filename string) {
@@ -77,15 +70,15 @@ func checkErr(e error) {
 }
 
 func openDB() *sql.DB {
-	//TODO: use environment variables
-	host := "localhost"
+	host := os.Getenv("DATABASE_HOSTNAME")
+	password := os.Getenv("DATABASE_PASSWORD")
 	port := 5432
 	user := "postgres"
 	dbname := "test"
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
+		"dbname=%s password=%s sslmode=disable",
+		host, port, user, dbname, password)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)
@@ -127,6 +120,47 @@ func dumpToDB(job *Job) {
 	}
 }
 
+
+func replaceSynonym(db *sql.DB, target, src string) {
+	q := "SELECT distinct job_id FROM engwords"
+	rows, err := db.Query(q)
+	checkErr(err)
+
+	for rows.Next() {
+		var job_id int
+		err = rows.Scan(&job_id)
+		checkErr(err)
+
+		q = `UPDATE engwords SET word = $1 WHERE word = $2 and job_id = $3`
+		db.Exec(q, target, src, job_id)
+		q = `DELETE FROM engwords WHERE word = $1 and job_id = $2`
+		db.Exec(q, src, job_id)
+	}
+}
+
+func handleCleanDB(filename string) {
+	file, err := os.Open(filename)
+	checkErr(err)
+	defer file.Close()
+
+	db := openDB()
+	defer db.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		word := scanner.Text()
+
+		q := `DELETE FROM engwords WHERE word=$1`
+		_, err = db.Exec(q, word)
+		checkErr(err)
+	}
+	replaceSynonym(db, "javascript", "js")
+	replaceSynonym(db, "rails", "ror")
+	replaceSynonym(db, "vue", "vue.js")
+	replaceSynonym(db, "go", "golang")
+	replaceSynonym(db, "postgresql", "postgres")
+}
+
 func handleRead(filename string) {
 	file, err := os.Open(filename)
 	checkErr(err)
@@ -159,14 +193,53 @@ func handleRead(filename string) {
 	checkErr(scanner.Err())
 }
 
+func setCategory(c *category) {
+	db := openDB()
+	defer db.Close()
+
+	for _, w := range c.words {
+		q := `INSERT INTO category(word, category) VALUES ($1, $2)`
+		db.Exec(q, w, c.name)
+	}
+}
+
+func handleCategorize(filename string) {
+	file, err := os.Open(filename)
+	checkErr(err)
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	state := lookingCategoryName
+	var c *category
+	for scanner.Scan() {
+		str := scanner.Text()
+		switch {
+		case str == "":
+			setCategory(c)
+			state = lookingCategoryName
+			c = nil
+		case state == lookingCategoryName:
+			c = new(category)
+			c.name = str
+			c.words = make([]string, 0)
+			state = pickingWord
+		case state == pickingWord:
+			c.words = append(c.words, str)
+		}
+	}
+	setCategory(c)
+}
+
 func handleWeb() {
-	fmt.Println("web is not supported yet.")
+	webapp.Main()
 }
 
 func main() {
 	web := flag.Bool("web", false, "start web app")
 	fetch := flag.Bool("fetch", false, "do fetch")
 	read := flag.Bool("read", false, "do read")
+	cleandb := flag.Bool("cleandb", false, "Clean database from banned words")
+	categorize := flag.Bool("categorize", false, "Categorize words")
 	help := flag.Bool("help", false, "show help")
 	file := flag.String("file", "", "file to fetch to or read from")
 	flag.Parse()
@@ -174,7 +247,6 @@ func main() {
 	if *help {
 		showHelp(0)
 	}
-	handleWrongInput(*web, *fetch, *read, *file)
 
 	switch {
 	case *web:
@@ -183,8 +255,12 @@ func main() {
 		handleFetch(*file)
 	case *read:
 		handleRead(*file)
+	case *cleandb:
+		handleCleanDB(*file)
+	case *categorize:
+		handleCategorize(*file)
 	default:
-		fmt.Fprintf(os.Stderr, "Handle wrong input does not work!\n")
+		fmt.Fprintf(os.Stderr, "Wrong input!\n")
 		showHelp(1)
 	}
 }

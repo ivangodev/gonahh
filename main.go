@@ -25,21 +25,29 @@ const (
 )
 
 func showHelp(error_code int) {
-	fmt.Println("usage: main --file /path/to/file [--read|--fetch]")
-	fmt.Println("Fetch to or read from file vacancies info.")
-	fmt.Println("When read, info is dumped to database.")
+	fmt.Println("usage: main  [--web|--read --file path|--fetch --file path]")
+	fmt.Println("--web: start web application")
+	fmt.Println("--fetch: Fetch vacancies info from API and dump to --file")
+	fmt.Println("--read: Read vacancies info from --file and dump to database")
 	os.Exit(error_code)
 }
 
-func handleWrongInput(fetch, read bool, file string) {
+func boolToInt(v bool) int {
+	if v {
+		return 1
+	}
+	return 0
+}
+
+func handleWrongInput(web, fetch, read bool, file string) {
 	var inputIsWrong bool
 
-	if fetch == read {
-		fmt.Fprintf(os.Stderr, "use either read or fetch\n")
+	if boolToInt(web)+boolToInt(fetch)+boolToInt(read) != 1 {
+		fmt.Fprintf(os.Stderr, "use only one of web, fetch or read is a must\n")
 		inputIsWrong = true
 	}
 
-	if file == "" {
+	if !web && file == "" {
 		fmt.Fprintf(os.Stderr, "file is mandatory argument\n")
 		inputIsWrong = true
 	}
@@ -151,7 +159,12 @@ func handleRead(filename string) {
 	checkErr(scanner.Err())
 }
 
+func handleWeb() {
+	fmt.Println("web is not supported yet.")
+}
+
 func main() {
+	web := flag.Bool("web", false, "start web app")
 	fetch := flag.Bool("fetch", false, "do fetch")
 	read := flag.Bool("read", false, "do read")
 	help := flag.Bool("help", false, "show help")
@@ -161,9 +174,11 @@ func main() {
 	if *help {
 		showHelp(0)
 	}
-	handleWrongInput(*fetch, *read, *file)
+	handleWrongInput(*web, *fetch, *read, *file)
 
 	switch {
+	case *web:
+		handleWeb()
 	case *fetch:
 		handleFetch(*file)
 	case *read:

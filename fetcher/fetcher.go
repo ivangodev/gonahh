@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/vanyaio/gohh/extractor"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -18,7 +19,7 @@ type Vacancy struct {
 
 const apiURL = "https://api.hh.ru/vacancies"
 
-func getVacanciesURLsPerPage(pageNb int) []string {
+func getVacanciesURLsPerPage(pageNb int, area string) []string {
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create new request: %v\n", err)
@@ -27,34 +28,40 @@ func getVacanciesURLsPerPage(pageNb int) []string {
 
 	q := req.URL.Query()
 	q.Add("text", "NAME:developer")
-	q.Add("area", "2") //St-Petersburg
-	q.Add("page", strconv.FormatInt(int64(pageNb), 10))
+	q.Add("area", area)
+	q.Add("page", strconv.Itoa(pageNb))
 	q.Add("per_page", "100")
 	req.URL.RawQuery = q.Encode()
 
 	url := req.URL.String()
+	log.Println("Get vacancies from", url)
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to fetch: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to fetch: %s\n", err)
 		os.Exit(1)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to read %s: %v\n", url, err)
+		fmt.Fprintf(os.Stderr, "Failed to read: %s\n", err)
 		os.Exit(1)
 	}
 
 	var respJSON map[string]interface{}
 	if err := json.Unmarshal(body, &respJSON); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to unmarshall json %v\n", url, err)
+		fmt.Fprintf(os.Stderr, "Failed to unmarshall json: %s\n", err)
 		os.Exit(1)
 	}
 
 	res := make([]string, 0)
 	if respJSON["items"] == nil {
-		return res
+		if v, ok := respJSON["bad_argument"]; ok && v == "page, per_page" {
+			return res
+		} else {
+			fmt.Fprintf(os.Stderr, "Unknown API message type: %v", respJSON)
+			os.Exit(1)
+		}
 	}
 
 	for _, vacancy := range respJSON["items"].([]interface{}) {
@@ -65,15 +72,22 @@ func getVacanciesURLsPerPage(pageNb int) []string {
 	return res
 }
 
-func GetVacanciesURLs() []string {
-	res := make([]string, 0)
-
+func getVacanciesPerArea(res *[]string, area string) {
 	for page := 0; ; page++ {
-		if v := getVacanciesURLsPerPage(page); len(v) == 0 {
+		if v := getVacanciesURLsPerPage(page, area); len(v) == 0 {
 			break
 		} else {
-			res = append(res, v...)
+			*res = append(*res, v...)
 		}
+	}
+}
+
+func GetVacanciesURLs() []string {
+	res := make([]string, 0)
+	area := []string{"1", "2"}
+
+	for _, a := range area {
+		getVacanciesPerArea(&res, a)
 	}
 
 	return res
@@ -82,9 +96,10 @@ func GetVacanciesURLs() []string {
 func fetchVacancyDescrAndName(url string) (descr string, name string) {
 	client := &http.Client{}
 
+	log.Println("Get info of vacancy", url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to make new request %s: %v\n", url, err)
+		fmt.Fprintf(os.Stderr, "Failed to make new request: %s\n", err)
 		os.Exit(1)
 	}
 
@@ -92,25 +107,25 @@ func fetchVacancyDescrAndName(url string) (descr string, name string) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to fetch description %s: %v\n", url, err)
+		fmt.Fprintf(os.Stderr, "Failed to fetch description: %s\n", err)
 		os.Exit(1)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to read %s: %v\n", url, err)
+		fmt.Fprintf(os.Stderr, "Failed to read: %s\n", err)
 		os.Exit(1)
 	}
 
 	var respJSON map[string]interface{}
 	if err := json.Unmarshal(body, &respJSON); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to unmarshall JSON %s: %v\n", url, err)
+		fmt.Fprintf(os.Stderr, "Failed to unmarshall %v: %s\n", respJSON, err)
 		os.Exit(1)
 	}
 
 	if respJSON["description"] == nil {
-		fmt.Fprintf(os.Stderr, "Failed to get vacancy %s info\n", url)
+		fmt.Fprintf(os.Stderr, "Unknown API message type: %v", respJSON)
 		os.Exit(1)
 	}
 	descr = respJSON["description"].(string)

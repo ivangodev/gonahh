@@ -120,7 +120,6 @@ func dumpToDB(job *Job) {
 	}
 }
 
-
 func replaceSynonym(db *sql.DB, target, src string) {
 	q := "SELECT distinct job_id FROM engwords"
 	rows, err := db.Query(q)

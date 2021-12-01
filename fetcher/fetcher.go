@@ -17,10 +17,16 @@ type Vacancy struct {
 	engWords []string
 }
 
-const apiURL = "https://api.hh.ru/vacancies"
+var apiURL string
 
 func getVacanciesURLsPerPage(pageNb int, area string) []string {
-	req, err := http.NewRequest("GET", apiURL, nil)
+	var url string
+	if apiURL != "" {
+		url = apiURL
+	} else {
+		url = "https://api.hh.ru/vacancies"
+	}
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create new request: %v\n", err)
 		os.Exit(1)
@@ -33,7 +39,7 @@ func getVacanciesURLsPerPage(pageNb int, area string) []string {
 	q.Add("per_page", "100")
 	req.URL.RawQuery = q.Encode()
 
-	url := req.URL.String()
+	url = req.URL.String()
 	log.Println("Get vacancies from", url)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -50,7 +56,8 @@ func getVacanciesURLsPerPage(pageNb int, area string) []string {
 
 	var respJSON map[string]interface{}
 	if err := json.Unmarshal(body, &respJSON); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to unmarshall json: %s\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to unmarshall json %s: %s\n",
+			string(body), err)
 		os.Exit(1)
 	}
 

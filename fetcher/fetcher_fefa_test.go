@@ -40,9 +40,10 @@ func handleGetVacsUrls(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var urls string
-	for i := 0; i < 10; i++ {
+	urlsNb := 100
+	for i := 0; i < urlsNb; i++ {
 		urls += `{"url": "http://localhost:8080/vacancy"}`
-		if i != 9 {
+		if i != urlsNb-1 {
 			urls += `,`
 		}
 	}
@@ -67,8 +68,10 @@ func prepareMockServ(t *testing.T) {
 func TestFetchAndLogVacsMockServ(t *testing.T) {
 	go prepareMockServ(t)
 	time.Sleep(1 * time.Second)
+	go fetchRateLimit(5000, 400)
 	filename := "vacsFromMockServ_FeFa"
 	fetchAndLogVacs(filename)
+	close(fetchQueue)
 }
 
 func TestOldFetchAndLogVacsMockServ(t *testing.T) {
@@ -86,4 +89,11 @@ func TestOldFetchAndLogVacsMockServ(t *testing.T) {
 	for _, vacancy := range vacancies {
 		vacancy.LogVacancy(f)
 	}
+}
+
+func TestFetchAndLogVacsRateLimit(t *testing.T) {
+	go fetchRateLimit(1000, 7) //https://github.com/hhru/api/issues/74
+	filename := "vacsFromRealApi_FeFa"
+	fetchAndLogVacs(filename)
+	close(fetchQueue)
 }

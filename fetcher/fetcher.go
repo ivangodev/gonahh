@@ -20,6 +20,7 @@ type Vacancy struct {
 var apiURL string
 
 func getVacanciesURLsPerPage(pageNb int, area string) []string {
+	fetchQueue <- true
 	var url string
 	if apiURL != "" {
 		url = apiURL
@@ -101,6 +102,7 @@ func GetVacanciesURLs() []string {
 }
 
 func fetchVacancyDescrAndName(url string) (descr string, name string) {
+	fetchQueue <- true
 	client := &http.Client{}
 
 	log.Println("Get info of vacancy", url)

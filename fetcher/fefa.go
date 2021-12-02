@@ -69,3 +69,42 @@ func feFa(f fetcherFast, parentGroup *sync.WaitGroup, m *GroupEndMarker) {
 		parentGroup.Done()
 	}
 }
+
+var fetchQueue = make(chan bool)
+
+func fetchRateLimit(intervalMs int, reqPerIntrv int) {
+	//No rate limits
+	if reqPerIntrv < 0 {
+		for {
+			_, ok := <-fetchQueue
+			if !ok {
+				return
+			}
+		}
+	}
+
+	intrvStart := time.Now()
+	currFetchersCnt := 0
+
+	for {
+		dur := time.Since(intrvStart)
+		if dur.Milliseconds() > int64(intervalMs) {
+			intrvStart = time.Now()
+			currFetchersCnt = 0
+		} else if currFetchersCnt >= reqPerIntrv {
+			time.Sleep(10 * time.Millisecond)
+			continue
+		}
+
+		select {
+		case _, ok := <-fetchQueue:
+			if ok {
+				currFetchersCnt++
+			} else {
+				return
+			}
+		default:
+			time.Sleep(10 * time.Millisecond)
+		}
+	}
+}

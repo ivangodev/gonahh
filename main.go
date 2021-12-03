@@ -51,16 +51,9 @@ func boolToInt(v bool) int {
 }
 
 func handleFetch(filename string) {
-	vacanciesURLs := fetcher.GetVacanciesURLs()
-	vacancies := fetcher.NewVacancies(vacanciesURLs)
-
-	f, err := os.Create(filename)
-	if err != nil {
-		panic(err)
-	}
-	for _, vacancy := range vacancies {
-		vacancy.LogVacancy(f)
-	}
+	go fetcher.FetchRateLimit(1000, 7) //https://github.com/hhru/api/issues/74
+	fetcher.FetchAndLogVacs(filename)
+	close(fetcher.FetchQueue)
 }
 
 func checkErr(e error) {

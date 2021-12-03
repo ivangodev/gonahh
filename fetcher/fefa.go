@@ -70,13 +70,13 @@ func feFa(f fetcherFast, parentGroup *sync.WaitGroup, m *GroupEndMarker) {
 	}
 }
 
-var fetchQueue = make(chan bool)
+var FetchQueue = make(chan bool)
 
-func fetchRateLimit(intervalMs int, reqPerIntrv int) {
+func FetchRateLimit(intervalMs int, reqPerIntrv int) {
 	//No rate limits
 	if reqPerIntrv < 0 {
 		for {
-			_, ok := <-fetchQueue
+			_, ok := <-FetchQueue
 			if !ok {
 				return
 			}
@@ -97,7 +97,7 @@ func fetchRateLimit(intervalMs int, reqPerIntrv int) {
 		}
 
 		select {
-		case _, ok := <-fetchQueue:
+		case _, ok := <-FetchQueue:
 			if ok {
 				currFetchersCnt++
 			} else {

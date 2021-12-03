@@ -129,7 +129,7 @@ func logVacs(filename string) {
 	}
 }
 
-func fetchAndLogVacs(filename string) {
+func FetchAndLogVacs(filename string) {
 	doFeFa()
 	logVacs(filename)
 }

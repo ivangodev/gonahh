@@ -1,9 +1,10 @@
 package fetcher
 
 import (
+	"fmt"
 	"github.com/vanyaio/gohh/extractor"
+	"github.com/vanyaio/gohh/vacancy"
 	"log"
-	"os"
 	"strconv"
 	"sync"
 )
@@ -88,7 +89,8 @@ type vacancier struct {
 func (v *vacancier) prepare(m *GroupEndMarker) {
 	descr, name := fetchVacancyDescrAndName(v.url)
 	if engwords := extractor.ExtractEngWords(descr); engwords != nil {
-		putVacInfo(&Vacancy{URL: v.url, name: name, engWords: engwords})
+		putVacInfo(&vacancy.Vacancy{Url: v.url, Name: name,
+			EngWords: engwords})
 	} else {
 		log.Printf("Description of %s dropped\n", v.url)
 	}
@@ -105,10 +107,10 @@ func (v *vacancier) next() fetcherFast {
 func (v *vacancier) collectResults() {
 }
 
-var resVacsInfo []Vacancy = make([]Vacancy, 0)
+var resVacsInfo []vacancy.Vacancy = make([]vacancy.Vacancy, 0)
 var resMu sync.Mutex
 
-func putVacInfo(v *Vacancy) {
+func putVacInfo(v *vacancy.Vacancy) {
 	resMu.Lock()
 	resVacsInfo = append(resVacsInfo, *v)
 	resMu.Unlock()
@@ -120,12 +122,9 @@ func doFeFa() {
 }
 
 func logVacs(filename string) {
-	f, err := os.Create(filename)
+	err := vacancy.LogVacancies(filename, resVacsInfo)
 	if err != nil {
-		panic(err)
-	}
-	for _, vacancy := range resVacsInfo {
-		vacancy.LogVacancy(f)
+		panic(fmt.Sprintf("Failed to log vacancies: %s", err))
 	}
 }
 

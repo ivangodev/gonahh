@@ -10,12 +10,6 @@ import (
 	"strconv"
 )
 
-type Vacancy struct {
-	URL      string
-	name     string
-	engWords []string
-}
-
 var apiURL string
 
 func getVacanciesURLsPerPage(pageNb int, area string) []string {
@@ -118,15 +112,4 @@ func fetchVacancyDescrAndName(url string) (descr string, name string) {
 	descr = respJSON["description"].(string)
 	name = respJSON["name"].(string)
 	return
-}
-
-func (v *Vacancy) LogVacancy(f *os.File) {
-	//TODO: error handling
-	f.WriteString("\n")
-	f.WriteString(fmt.Sprintf("%s\n", v.URL))
-	f.WriteString(fmt.Sprintf("%s\n", v.name))
-	for _, w := range v.engWords {
-		f.WriteString(fmt.Sprintf("%s\n", w))
-	}
-	f.WriteString("\n")
 }

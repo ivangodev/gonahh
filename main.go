@@ -6,29 +6,17 @@ import (
 	"flag"
 	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/vanyaio/gohh/data"
 	"github.com/vanyaio/gohh/fetcher"
+	"github.com/vanyaio/gohh/vacancy"
 	"github.com/vanyaio/gohh/webapp"
 	"os"
-	"strings"
 )
-
-//TODO: this is awful duplicate of Vacancy. Refactor it to own package.
-type Job struct {
-	URL      string
-	name     string
-	engWords []string
-}
 
 type category struct {
 	name  string
 	words []string
 }
-
-const (
-	lookingURL     = iota
-	lookingName    = iota
-	lookingEngword = iota
-)
 
 const (
 	lookingCategoryName = iota
@@ -62,57 +50,6 @@ func checkErr(e error) {
 	}
 }
 
-func openDB() *sql.DB {
-	host := os.Getenv("DATABASE_HOSTNAME")
-	password := os.Getenv("DATABASE_PASSWORD")
-	port := 5432
-	user := "postgres"
-	dbname := "test"
-
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s password=%s sslmode=disable",
-		host, port, user, dbname, password)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		panic(err)
-	}
-
-	return db
-}
-
-func dumpToDB(job *Job) {
-	if job == nil {
-		return
-	}
-	db := openDB()
-	defer db.Close()
-
-	stat := `INSERT INTO url(url) VALUES ($1)`
-	_, err := db.Exec(stat, job.URL)
-	if err != nil {
-		return /* It's likely violates duplicates - drop such job. */
-	}
-
-	rows, err := db.Query("SELECT job_id FROM url WHERE url='" + job.URL + "'")
-	checkErr(err)
-	var job_id int
-	for rows.Next() {
-		err = rows.Scan(&job_id)
-		checkErr(err)
-	}
-
-	stat = `INSERT INTO name(job_id, name) VALUES ($1, $2)`
-	job.name = strings.ToLower(job.name)
-	_, err = db.Exec(stat, job_id, job.name)
-	checkErr(err)
-
-	for _, w := range job.engWords {
-		stat = `INSERT INTO engwords(job_id, word) VALUES ($1, $2)`
-		_, err = db.Exec(stat, job_id, w)
-		checkErr(err)
-	}
-}
-
 func replaceSynonym(db *sql.DB, target, src string) {
 	q := "SELECT distinct job_id FROM engwords"
 	rows, err := db.Query(q)
@@ -131,12 +68,10 @@ func replaceSynonym(db *sql.DB, target, src string) {
 }
 
 func handleCleanDB(filename string) {
+	db := data.Db
 	file, err := os.Open(filename)
 	checkErr(err)
 	defer file.Close()
-
-	db := openDB()
-	defer db.Close()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -154,40 +89,19 @@ func handleCleanDB(filename string) {
 }
 
 func handleRead(filename string) {
-	file, err := os.Open(filename)
-	checkErr(err)
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	state := lookingURL
-	var v *Job
-	for scanner.Scan() {
-		str := scanner.Text()
-		switch {
-		case str == "":
-			dumpToDB(v)
-			state = lookingURL
-			v = nil
-		case state == lookingURL:
-			v = new(Job)
-			v.engWords = make([]string, 0)
-			v.URL = str
-			state = lookingName
-		case state == lookingName:
-			v.name = str
-			state = lookingEngword
-		case state == lookingEngword:
-			v.engWords = append(v.engWords, str)
-		}
+	vacs, err := vacancy.ReadVacancies(filename)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to read vacancies: %s", err))
 	}
-	dumpToDB(v)
 
-	checkErr(scanner.Err())
+	err = vacancy.DumpVacaniesToDB(vacs)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to dump vacancies DB: %s", err))
+	}
 }
 
 func setCategory(c *category) {
-	db := openDB()
-	defer db.Close()
+	db := data.Db
 
 	for _, w := range c.words {
 		q := `INSERT INTO category(word, category) VALUES ($1, $2)`

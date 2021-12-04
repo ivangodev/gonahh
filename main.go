@@ -28,6 +28,8 @@ func showHelp(error_code int) {
 	fmt.Println("--web: start web application")
 	fmt.Println("--fetch: Fetch vacancies info from API and dump to --file")
 	fmt.Println("--read: Read vacancies info from --file and dump to database")
+	fmt.Println("--cleandb: Delete banned words from --file")
+	fmt.Println("--categorize: Set categories as specified in --file")
 	os.Exit(error_code)
 }
 

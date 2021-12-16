@@ -279,5 +279,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 func Main() {
 	http.HandleFunc("/api/", searchHandler)
+	fs := http.FileServer(http.Dir("./webapp/static"))
+	http.Handle("/", fs)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:8080/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./stylegen_files/output.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+
+    <div class="flex flex-col min-h-screen">
+      <div class="grow mt-16">
+
+        <img class="mx-auto max-w-sm" src="./stylegen_files/Screenshot-from-2021-12-15-09-56-53.png" alt="Logo">
+
+		<div class="max-w-lg w-1/2 mx-auto mt-8 font-mono text-center">Rating of development techologies based on thousands job descriptions from <a href="https://hh.ru/" class="font-mono underline text-sky-600" target="_blank">hh.ru</a></div>
+
+        <form class="max-w-lg w-1/2 mx-auto flex justify-center" id="SearchBox">
+          <button type="submit" disabled="" style="display: none" aria-hidden="true"></button>
+          <input class="grow placeholder:italic placeholder:text-gray-400 py-2 pl-3 pr-3 mt-8 block border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1" placeholder="Type your language (i.e. java)..." type="text" id="searchBoxContent">
+          <div class="border-2 py-2 pl-3 pr-3 mt-8 rounded-md hover:bg-gray-100" onclick="findClicked()">Find!</div>
+        </form><div class="max-w-lg w-1/2 mx-auto flex flex-wrap" id="Categories"><div onclick="selectCategory(this)" class="Category rounded-md border-2 w-fit border-sky-600 p-0.5 bg-sky-400 hover:bg-sky-600 mr-4 mt-4 font-serif italic underline">All</div><div onclick="selectCategory(this)" class="Category rounded-md border-2 w-fit border-sky-600 p-0.5 bg-sky-400 hover:bg-sky-600 mr-4 mt-4 font-serif italic">Databases</div><div onclick="selectCategory(this)" class="Category rounded-md border-2 w-fit border-sky-600 p-0.5 bg-sky-400 hover:bg-sky-600 mr-4 mt-4 font-serif italic">Data Frameworks</div><div onclick="selectCategory(this)" class="Category rounded-md border-2 w-fit border-sky-600 p-0.5 bg-sky-400 hover:bg-sky-600 mr-4 mt-4 font-serif italic">Frameworks</div><div onclick="selectCategory(this)" class="Category rounded-md border-2 w-fit border-sky-600 p-0.5 bg-sky-400 hover:bg-sky-600 mr-4 mt-4 font-serif italic">Languages</div><div onclick="selectCategory(this)" class="Category rounded-md border-2 w-fit border-sky-600 p-0.5 bg-sky-400 hover:bg-sky-600 mr-4 mt-4 font-serif italic">Operating systems</div><div onclick="selectCategory(this)" class="Category rounded-md border-2 w-fit border-sky-600 p-0.5 bg-sky-400 hover:bg-sky-600 mr-4 mt-4 font-serif italic">Other</div></div><div class="Top mt-10 hidden" id="topOther">
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">1.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">git</div>
+		<div class="font-mono">43%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[43%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[57%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">2.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">docker</div>
+		<div class="font-mono">40%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[40%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[60%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">3.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">rest</div>
+		<div class="font-mono">34%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[34%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[66%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">4.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">maven</div>
+		<div class="font-mono">20%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[20%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[80%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">5.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">oracle</div>
+		<div class="font-mono">20%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[20%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[80%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">6.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">ci</div>
+		<div class="font-mono">20%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[20%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[80%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">7.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">kubernetes</div>
+		<div class="font-mono">19%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[19%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[81%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">8.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">cd</div>
+		<div class="font-mono">18%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[18%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[82%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">9.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">web</div>
+		<div class="font-mono">18%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[18%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[82%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">10.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">security</div>
+		<div class="font-mono">17%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[17%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[83%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">11.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">backend</div>
+		<div class="font-mono">17%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[17%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[83%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">12.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">agile</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">13.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">soap</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">14.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">cloud</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">15.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">jenkins</div>
+		<div class="font-mono">15%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[15%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[85%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">16.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">jira</div>
+		<div class="font-mono">15%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[15%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[85%] bg-blue-400 h-3"></div>
+	</div>
+</div></div><div class="Top mt-10 hidden" id="topOperatingsystems">
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">1.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">linux</div>
+		<div class="font-mono">17%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[17%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[83%] bg-blue-400 h-3"></div>
+	</div>
+</div></div><div class="Top mt-10 hidden" id="topLanguages">
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">1.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">sql</div>
+		<div class="font-mono">37%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[37%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[63%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">2.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">javascript</div>
+		<div class="font-mono">26%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[26%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[74%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">3.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">kotlin</div>
+		<div class="font-mono">22%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[22%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[78%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">4.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">html</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">5.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">css</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div></div><div class="Top mt-10 hidden" id="topFrameworks">
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">1.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">spring</div>
+		<div class="font-mono">65%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[65%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[35%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">2.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">boot</div>
+		<div class="font-mono">32%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[32%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[68%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">3.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">hibernate</div>
+		<div class="font-mono">24%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[24%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[76%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">4.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">mvc</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div></div><div class="Top mt-10 hidden" id="topDataFrameworks">
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">1.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">kafka</div>
+		<div class="font-mono">35%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[35%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[65%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">2.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">rabbitmq</div>
+		<div class="font-mono">15%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[15%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[85%] bg-blue-400 h-3"></div>
+	</div>
+</div></div><div class="Top mt-10 hidden" id="topDatabases">
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">1.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">postgresql</div>
+		<div class="font-mono">46%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[46%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[54%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">2.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">redis</div>
+		<div class="font-mono">22%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[22%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[78%] bg-blue-400 h-3"></div>
+	</div>
+</div></div><div class="Top mt-10" id="topAll">
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">1.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">spring</div>
+		<div class="font-mono">65%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[65%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[35%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">2.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">postgresql</div>
+		<div class="font-mono">46%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[46%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[54%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">3.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">git</div>
+		<div class="font-mono">43%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[43%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[57%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">4.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">docker</div>
+		<div class="font-mono">40%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[40%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[60%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">5.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">sql</div>
+		<div class="font-mono">37%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[37%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[63%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">6.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">kafka</div>
+		<div class="font-mono">35%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[35%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[65%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">7.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">rest</div>
+		<div class="font-mono">34%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[34%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[66%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">8.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">boot</div>
+		<div class="font-mono">32%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[32%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[68%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">9.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">javascript</div>
+		<div class="font-mono">26%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[26%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[74%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">10.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">hibernate</div>
+		<div class="font-mono">24%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[24%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[76%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">11.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">kotlin</div>
+		<div class="font-mono">22%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[22%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[78%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">12.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">redis</div>
+		<div class="font-mono">22%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[22%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[78%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">13.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">ci</div>
+		<div class="font-mono">20%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[20%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[80%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">14.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">maven</div>
+		<div class="font-mono">20%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[20%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[80%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">15.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">oracle</div>
+		<div class="font-mono">20%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[20%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[80%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">16.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">kubernetes</div>
+		<div class="font-mono">19%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[19%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[81%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">17.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">web</div>
+		<div class="font-mono">18%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[18%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[82%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">18.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">cd</div>
+		<div class="font-mono">18%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[18%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[82%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">19.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">backend</div>
+		<div class="font-mono">17%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[17%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[83%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">20.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">security</div>
+		<div class="font-mono">17%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[17%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[83%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">21.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">linux</div>
+		<div class="font-mono">17%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[17%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[83%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">22.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">html</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">23.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">css</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">24.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">soap</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">25.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">cloud</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">26.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">agile</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">27.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">mvc</div>
+		<div class="font-mono">16%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[16%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[84%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">28.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">jenkins</div>
+		<div class="font-mono">15%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[15%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[85%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-gray-100 border-b-2">
+	<div class="w-7 font-mono">29.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">rabbitmq</div>
+		<div class="font-mono">15%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[15%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[85%] bg-blue-400 h-3"></div>
+	</div>
+</div>
+<div class="max-w-lg w-1/2 mx-auto flex mt-4 bg-white border-b-2">
+	<div class="w-7 font-mono">30.</div>
+	<div class="w-36 mr-7 flex justify-between">
+		<div class="font-mono">jira</div>
+		<div class="font-mono">15%</div>
+	</div>
+	<div class="flex grow items-center  mr-1">
+		<div class="basis-[15%] bg-blue-600 h-3">&nbsp;</div>
+		<div class="basis-[85%] bg-blue-400 h-3"></div>
+	</div>
+</div></div></div>
+
+      <div class="max-w-lg w-1/2 mx-auto h-20 bg-gray-100">
+        <div class="text-right"><a href="https://github.com/" class="font-mono underline text-sky-600" target="_blank">Project github</a></div>
+        <div class="text-right font-mono">ivan.swdev@gmail.com</div>
+      </div>
+
+    </div>
+
+
+    <div class="basis-[0%] basis-[1%] basis-[2%] basis-[3%] basis-[4%] basis-[5%] basis-[6%] basis-[7%] basis-[8%] basis-[9%] basis-[10%] basis-[11%] basis-[12%] basis-[13%] basis-[14%] basis-[15%] basis-[16%] basis-[17%] basis-[18%] basis-[19%] basis-[20%] basis-[21%] basis-[22%] basis-[23%] basis-[24%] basis-[25%] basis-[26%] basis-[27%] basis-[28%] basis-[29%] basis-[30%] basis-[31%] basis-[32%] basis-[33%] basis-[34%] basis-[35%] basis-[36%] basis-[37%] basis-[38%] basis-[39%] basis-[40%] basis-[41%] basis-[42%] basis-[43%] basis-[44%] basis-[45%] basis-[46%] basis-[47%] basis-[48%] basis-[49%] basis-[50%] basis-[51%] basis-[52%] basis-[53%] basis-[54%] basis-[55%] basis-[56%] basis-[57%] basis-[58%] basis-[59%] basis-[60%] basis-[61%] basis-[62%] basis-[63%] basis-[64%] basis-[65%] basis-[66%] basis-[67%] basis-[68%] basis-[69%] basis-[70%] basis-[71%] basis-[72%] basis-[73%] basis-[74%] basis-[75%] basis-[76%] basis-[77%] basis-[78%] basis-[79%] basis-[80%] basis-[81%] basis-[82%] basis-[83%] basis-[84%] basis-[85%] basis-[86%] basis-[87%] basis-[88%] basis-[89%] basis-[90%] basis-[91%] basis-[92%] basis-[93%] basis-[94%] basis-[95%] basis-[96%] basis-[97%] basis-[98%] basis-[99%] basis-[100%]  hidden"></div>
+    <script src="./stylegen_files/script.js"></script>
+  
+
+
+</body></html>

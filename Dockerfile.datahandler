@@ -1,0 +1,12 @@
+FROM golang
+
+ADD . /go/src
+WORKDIR /go/src
+
+RUN go mod tidy
+RUN go build ./cmd/datahandler
+
+EXPOSE 8080
+
+ENTRYPOINT ["./datahandler"]
+CMD ["--readfrom", "exampleData/data.sql"]

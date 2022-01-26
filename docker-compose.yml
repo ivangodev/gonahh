@@ -1,0 +1,37 @@
+version: '3.3'
+
+services:
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=gonahh
+
+  server:
+    depends_on:
+      - postgres
+    build:
+      context: ./
+      dockerfile: Dockerfile.server
+    container_name: gonahh_server
+    ports:
+     - 8080:8080
+    environment:
+      - DATABASE_HOSTNAME=postgres
+      - DATABASE_PASSWORD=password
+      - POSTGRES_DB=gonahh
+
+  datahandler:
+    depends_on:
+      - postgres
+    build:
+      context: ./
+      dockerfile: Dockerfile.datahandler
+    environment:
+      - DATABASE_HOSTNAME=postgres
+      - DATABASE_PASSWORD=password
+      - POSTGRES_DB=gonahh
+    container_name: gonahh_datahandler

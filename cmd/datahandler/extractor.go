@@ -1,4 +1,4 @@
-package extractor
+package main
 
 import (
 	"fmt"
@@ -28,7 +28,25 @@ func descrInEnglish(descr string) bool {
 	return float64(eng_runes_nb)/float64(runes_nb) > 0.5
 }
 
-func ExtractEngWords(descrInHTML string) []string {
+func replaceSynonym(word string) string {
+	//TODO: use helper file
+	switch word {
+	case "js":
+		return "javascript"
+	case "ror":
+		return "rails"
+	case "vue.js":
+		return "vue"
+	case "golang":
+		return "go"
+	case "postgres":
+		return "postgresql"
+	default:
+		return word
+	}
+}
+
+func extractEngWords(descrInHTML string) []string {
 	descr := strip.StripTags(descrInHTML)
 
 	if descrInEnglish(descr) {
@@ -46,7 +64,7 @@ func ExtractEngWords(descrInHTML string) []string {
 
 	lowercaseEngWords := make(map[string]interface{})
 	for k := range uniqueEngWords {
-		lowercaseEngWords[strings.ToLower(k)] = nil
+		lowercaseEngWords[replaceSynonym(strings.ToLower(k))] = nil
 	}
 
 	res := make([]string, len(lowercaseEngWords))

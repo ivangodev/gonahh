@@ -1,115 +1,103 @@
 package fetcher
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"os"
-	"strconv"
+	"github.com/ivangodev/fefa/pkg/fefa"
+	"github.com/ivangodev/gonahh/entity"
+	"sync"
 )
 
-var apiURL string
-
-func getVacanciesURLsPerPage(pageNb int, area string) []string {
-	FetchQueue <- true
-	var url string
-	if apiURL != "" {
-		url = apiURL
-	} else {
-		url = "https://api.hh.ru/vacancies"
-	}
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to create new request: %v\n", err)
-		os.Exit(1)
-	}
-
-	q := req.URL.Query()
-	q.Add("text", "NAME:developer")
-	q.Add("area", area)
-	q.Add("page", strconv.Itoa(pageNb))
-	q.Add("per_page", "100")
-	req.URL.RawQuery = q.Encode()
-
-	url = req.URL.String()
-	log.Println("Get vacancies from", url)
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to fetch: %s\n", err)
-		os.Exit(1)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to read: %s\n", err)
-		os.Exit(1)
-	}
-
-	var respJSON map[string]interface{}
-	if err := json.Unmarshal(body, &respJSON); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to unmarshall json %s: %s\n",
-			string(body), err)
-		os.Exit(1)
-	}
-
-	res := make([]string, 0)
-	if respJSON["items"] == nil {
-		if v, ok := respJSON["bad_argument"]; ok && v == "page, per_page" {
-			return res
-		} else {
-			fmt.Fprintf(os.Stderr, "Unknown API message type: %v", respJSON)
-			os.Exit(1)
-		}
-	}
-
-	for _, vacancy := range respJSON["items"].([]interface{}) {
-		vacancyJSON := vacancy.(map[string]interface{})
-		res = append(res, vacancyJSON["url"].(string))
-	}
-
-	return res
+type FetchCallbacks struct {
+	PageExist                func(page, area int) bool
+	FetchVacanciesURLs       func(pageNb, area int) []string
+	FetchVacancyDescrAndName func(url string) (descr, name string)
 }
 
-func fetchVacancyDescrAndName(url string) (descr string, name string) {
-	FetchQueue <- true
-	client := &http.Client{}
+type Arear struct {
+	currArea int
+	Cb       FetchCallbacks
+}
 
-	log.Println("Get info of vacancy", url)
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to make new request: %s\n", err)
-		os.Exit(1)
+func NewRoot(cb FetchCallbacks) fefa.FetcherFast {
+	return &Arear{Cb: cb}
+}
+
+func (a *Arear) Prepare() {
+}
+
+func (a *Arear) Next() fefa.FetcherFast {
+	a.currArea++
+	//Iterate over Moscow and St-Petersburg
+	if a.currArea <= 2 {
+		return &pagerParent{area: a.currArea, currPage: -1, cb: a.Cb}
 	}
+	return nil
+}
 
-	req.Header.Set("User-Agent", "gonahh/1.0 (tri.ilchenko@gmail.com)")
+func (a *Arear) CollectResults() {
+}
 
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to fetch description: %s\n", err)
-		os.Exit(1)
+type pagerParent struct {
+	area     int
+	currPage int
+	cb       FetchCallbacks
+}
+
+func (p *pagerParent) Prepare() {
+}
+
+func (p *pagerParent) Next() fefa.FetcherFast {
+	p.currPage++
+	if p.cb.PageExist(p.currPage, p.area) {
+		return &pager{area: p.area, page: p.currPage, cb: p.cb}
 	}
+	return nil
+}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to read: %s\n", err)
-		os.Exit(1)
-	}
+func (a *pagerParent) CollectResults() {
+}
 
-	var respJSON map[string]interface{}
-	if err := json.Unmarshal(body, &respJSON); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to unmarshall %v: %s\n", respJSON, err)
-		os.Exit(1)
-	}
+type pager struct {
+	area       int
+	page       int
+	vacUrls    []string
+	currUrlIdx int
+	cb         FetchCallbacks
+}
 
-	if respJSON["description"] == nil {
-		fmt.Fprintf(os.Stderr, "Unknown API message type: %v", respJSON)
-		os.Exit(1)
+func (p *pager) Prepare() {
+	p.vacUrls = p.cb.FetchVacanciesURLs(p.page, p.area)
+	p.currUrlIdx = -1
+}
+
+func (p *pager) Next() fefa.FetcherFast {
+	p.currUrlIdx++
+	if p.currUrlIdx >= len(p.vacUrls) {
+		return nil
 	}
-	descr = respJSON["description"].(string)
-	name = respJSON["name"].(string)
-	return
+	return &vacancier{url: p.vacUrls[p.currUrlIdx], cb: p.cb}
+}
+
+func (p *pager) CollectResults() {
+}
+
+type vacancier struct {
+	url string
+	cb  FetchCallbacks
+}
+
+var ResVacsInfo = make(entity.URLtoDescrName)
+var resMu sync.Mutex
+
+func (v *vacancier) Prepare() {
+	descr, name := v.cb.FetchVacancyDescrAndName(v.url)
+	resMu.Lock()
+	ResVacsInfo[v.url] = entity.DescrName{Descr: descr, Name: name}
+	resMu.Unlock()
+}
+
+func (v *vacancier) Next() fefa.FetcherFast {
+	return nil
+}
+
+func (v *vacancier) CollectResults() {
 }

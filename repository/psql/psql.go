@@ -1,6 +1,7 @@
 package psql
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"github.com/ivangodev/gonahh/entity"
@@ -8,7 +9,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -41,28 +41,45 @@ func OpenDB() (*sql.DB, error) {
 
 func NewPSql(db *sql.DB) *PSql {
 	q := `
-    CREATE TABLE url (
+    CREATE TABLE IF NOT EXISTS url (
         job_id integer PRIMARY KEY,
         url VARCHAR ( 255 ) UNIQUE NOT NULL
     );
-    CREATE TABLE name (
+    CREATE TABLE IF NOT EXISTS name (
         job_id integer PRIMARY KEY REFERENCES url (job_id),
         name VARCHAR ( 255 ) NOT NULL
     );
-    CREATE TABLE engwords (
+    CREATE TABLE IF NOT EXISTS engwords (
         job_id INTEGER REFERENCES url (job_id),
         word VARCHAR ( 255 ) NOT NULL,
         UNIQUE (job_id, word)
     );
-    CREATE TABLE category (
+    CREATE TABLE IF NOT EXISTS category (
         word VARCHAR ( 255 ) NOT NULL UNIQUE,
         category VARCHAR ( 255 ) NOT NULL
     );`
-	_, err := db.Exec(q)
+
+	ctx := context.Background()
+	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		if !strings.HasSuffix(err.Error(), "already exists") {
-			panic(fmt.Sprintf("Failed to create tables: %s", err))
-		}
+		panic(fmt.Sprintf("Failed to begin transaction: %s", err))
+	}
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(ctx, "SET TRANSACTION ISOLATION LEVEL Serializable")
+	if err != nil {
+		panic(fmt.Sprintf("Failed to set up transaction level: %s", err))
+	}
+
+	_, err = tx.ExecContext(ctx, q)
+	if err != nil {
+		//FIXME: there's race with 2 services startup
+		return &PSql{Db: db}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		panic(fmt.Sprintf("Failed to commit transaction: %s", err))
 	}
 
 	return &PSql{Db: db}

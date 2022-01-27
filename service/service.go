@@ -44,7 +44,7 @@ func truncate(t []entity.KeywordRate, thresholdRate int) []entity.KeywordRate {
 	for ; i < len(t) && t[i].Rate >= thresholdRate; i++ {
 	}
 	//Don't make the top empty
-	if i == 0 {
+	if i == 0 && len(t) != 0 {
 		i = 1
 	}
 	return t[:i]

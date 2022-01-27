@@ -166,7 +166,7 @@ func (r *PSql) GetCategoryTop(jobName, category string) (entity.CategoryTop, err
     SELECT word, ROUND((COUNT(word)*100.0 / $1), 0) as rate
     FROM engwords JOIN name USING(job_id) JOIN category USING(word)
     WHERE name LIKE $2 AND category = $3
-    GROUP BY word ORDER BY rate DESC
+    GROUP BY word ORDER BY rate DESC LIMIT 40;
     `
 	likeJobName := fmt.Sprintf("%%%v%%", jobName)
 	top, err := r.getTop(q, jobsNumber, likeJobName, category)
@@ -190,7 +190,7 @@ func (r *PSql) GetAllTop(jobName string) ([]entity.KeywordRate, error) {
     SELECT word, ROUND((COUNT(word)*100.0 / $1), 0) as rate
     FROM engwords JOIN name USING(job_id)
     WHERE name LIKE $2
-    GROUP BY word ORDER BY rate DESC
+    GROUP BY word ORDER BY rate DESC LIMIT 40;
     `
 	likeJobName := fmt.Sprintf("%%%v%%", jobName)
 	return r.getTop(q, jobsNumber, likeJobName)
